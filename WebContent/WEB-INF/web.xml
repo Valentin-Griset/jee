@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>BanqueWeb</display-name>
+  
+  <servlet>
+  	<servlet-name>gestionCompte</servlet-name>
+  	<servlet-class>servlets.SOperations</servlet-class>
+  </servlet>
+  
+  <servlet>
+  	<servlet-name>jspSaisie</servlet-name>
+  	<jsp-file>/Compte/JSaisieNoDeCompte.jsp</jsp-file>
+  	<init-param>
+  		<param-name>CodeAffichage</param-name>
+  		<param-value>0</param-value>
+  	</init-param>
+  </servlet>
+  
+  <servlet>
+  	<servlet-name>jspOperation</servlet-name>
+  	<jsp-file>/Compte/JOperations.jsp</jsp-file>
+  	<init-param>
+  		<param-name>CodeAffichage</param-name>
+  		<param-value>10</param-value>
+  	</init-param>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>gestionCompte</servlet-name>
+  	<url-pattern>/gestionCompte</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+  	<servlet-name>jspSaisie</servlet-name>
+  	<url-pattern>/SaisieNoDeCompte</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+  	<servlet-name>jspOperation</servlet-name>
+  	<url-pattern>/Operations</url-pattern>
+  </servlet-mapping>
+  
+  <welcome-file-list>
+  	<welcome-file>JSaisieNoDeCompte.jsp</welcome-file>
+  </welcome-file-list>
+  
+</web-app>
