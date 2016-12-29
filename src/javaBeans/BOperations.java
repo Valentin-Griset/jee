@@ -2,7 +2,6 @@ package javaBeans;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import gestionErreurs.TraitementException;
 
@@ -32,7 +33,7 @@ public class BOperations {
 	// Tri
 	private String dateInf;
 	private String dateSup;
-	private List<String> operationsParDates;
+	private List<String[]> operationsParDates;
 
 	public void consult() throws TraitementException {
 		try {
@@ -42,7 +43,6 @@ public class BOperations {
 				this.nom = rs.getString("NOM");
 				this.prenom = rs.getString("PRENOM");
 				this.solde = rs.getBigDecimal("SOLDE");
-				System.out.println(new Date() + " : [" + noDeCompte + "] : consulted.");
 			} else {
 				throw new TraitementException("3");
 			}
@@ -75,7 +75,7 @@ public class BOperations {
 					StringBuilder sb = new StringBuilder();
 					sb.append("insert into OPERATIONS values(");
 					sb.append("'" + noDeCompte + "',");
-					sb.append("'" + cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-"
+					sb.append("'" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH)+1) + "-"
 							+ cal.get(Calendar.DAY_OF_MONTH) + "',");
 					sb.append("'" + cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE) + ":"
 							+ cal.get(Calendar.SECOND) + "',");
@@ -94,25 +94,32 @@ public class BOperations {
 		}
 	}
 
-	public void sortByDates() throws SQLException {
-
-		operationsParDates = new ArrayList<String>();
-		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery("SELECT date,heure,op,value FROM OPERATIONS where NOCOMPTE = '" + noDeCompte
-				+ "' and date >= '" + dateInf + "' and date <= '" + dateSup + "' order by date desc,heure desc");
-		while (rs.next()) {
-			operationsParDates.add(rs.getDate("date") + " " + rs.getTime("heure") + " " + rs.getString("op") + " "
-					+ rs.getBigDecimal("value"));
+	public List<String[]> sortByDates() throws TraitementException {
+		operationsParDates = new ArrayList<String[]>();
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("SELECT date,heure,op,value FROM OPERATIONS where NOCOMPTE = '" + noDeCompte
+					+ "' and date >= '" + dateInf + "' and date <= '" + dateSup + "' order by date desc,heure desc");
+			while (rs.next()) {
+				String[] operation = {rs.getDate("date")+"",rs.getString("op")+"",rs.getBigDecimal("value")+""};
+				operationsParDates.add(operation);
+			}
+		} catch(SQLException e) {
+			throw new TraitementException("21");
 		}
+		return operationsParDates;
 	}
 
-	public void openConnection() throws TraitementException {
+	public void openConnection(DataSource ds) throws TraitementException {
+		if(ds == null) {
+			System.err.println("Erreur lors de l'utilisation du DataSource.");
+			throw new TraitementException("21");
+		}
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			this.conn = DriverManager.getConnection("jdbc:mysql://localhost/ig3_jee", "necrosys", "jt7ai2yyFc");
+			this.conn = ds.getConnection();
 			this.conn.setAutoCommit(false);
-		} catch (SQLException | ClassNotFoundException e) {
-			e.printStackTrace();
+		} catch (SQLException e) {
+			System.err.println("Erreur lors de la récupération de la connexion.");
 			throw new TraitementException("21");
 		}
 	}
@@ -186,7 +193,7 @@ public class BOperations {
 		this.dateSup = dateSup;
 	}
 
-	public List<String> getOperationsParDates() {
+	public List<String[]> getOperationsParDates() {
 		return operationsParDates;
 	}
 
