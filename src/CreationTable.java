@@ -45,7 +45,7 @@ public class CreationTable {
 		Connection connect = DriverManager.getConnection(
 					"jdbc:mysql://localhost/ig3_jee", 
 					"necrosys", 
-					"jt7ai2yyFc");
+					"PWD");
 		
 		createTableCompte(connect);
 		createTableOperation(connect);

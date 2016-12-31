@@ -7,9 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,16 +31,7 @@ public class SOperations extends HttpServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init();
-		try {
-			Context envContext = new InitialContext();
-			String repo = "java:comp/env"+config.getInitParameter("nomDataSource");
-			ds = (DataSource)envContext.lookup(repo);
-			System.out.println(repo);
-			
-		} catch (NamingException e) {
-			System.err.println("Erreur lors de la récupération des informations du DataSource.");
-			e.printStackTrace();
-		}
+		ds = (DataSource)config.getServletContext().getAttribute("dataSource");
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

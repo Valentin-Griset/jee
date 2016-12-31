@@ -5,11 +5,20 @@
   <servlet>
   	<servlet-name>gestionCompte</servlet-name>
   	<servlet-class>servlets.SOperations</servlet-class>
-  	<init-param>
+  	<!-- <init-param>
   		<param-name>nomDataSource</param-name>
   		<param-value>/jdbc/Banque</param-value>
-  	</init-param>
+  	</init-param> -->
   </servlet>
+  
+  <context-param>
+  	<param-name>nomDataSource</param-name>
+  	<param-value>/jdbc/Banque</param-value>
+  </context-param>
+  
+  <listener>
+  	<listener-class>listeners.InitBanqueWeb</listener-class>
+  </listener>
   
   <servlet>
   	<servlet-name>jspSaisie</servlet-name>
